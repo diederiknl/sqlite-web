@@ -2,6 +2,38 @@
 
 Deze directory bevat scripts en configuratie voor het draaien van sqlite-web in een LXC container.
 
+## 📚 Documentatie
+
+- **[SCRIPTS-README.md](SCRIPTS-README.md)** - Complete guide voor alle Proxmox automation scripts
+- **[PROXMOX-DEPLOYMENT.md](PROXMOX-DEPLOYMENT.md)** - Handmatige deployment op Proxmox
+- **[PROXMOX-TEMPLATE-CREATION.md](PROXMOX-TEMPLATE-CREATION.md)** - Template creation details
+- Deze README - Standalone LXC/LXD setup (niet Proxmox)
+
+## 🚀 Quick Start (Proxmox)
+
+Voor **Proxmox** gebruikers (meest complete automation):
+
+```bash
+# 1. Upload scripts naar Proxmox
+scp lxc/*.sh root@proxmox-ip:/root/
+
+# 2. SSH naar Proxmox en bouw template
+ssh root@proxmox-ip
+cd /root
+bash build-proxmox-template.sh
+
+# 3. Deploy containers
+bash deploy-from-template.sh --container-id 100
+# Of bulk: bash bulk-deploy.sh --count 5
+
+# 4. Beheer containers
+bash manage-containers.sh list
+bash manage-containers.sh status
+bash manage-containers.sh monitor
+```
+
+Zie **[SCRIPTS-README.md](SCRIPTS-README.md)** voor complete Proxmox guide!
+
 ## Voordelen van LXC vs Docker
 
 - **Betere performance**: Native system calls zonder container overhead

@@ -11,9 +11,11 @@ import operator
 import optparse
 import os
 import re
+import secrets
 import sys
 import threading
 import time
+import warnings as std_warnings
 import webbrowser
 from collections import namedtuple, OrderedDict
 from functools import wraps
@@ -21,6 +23,13 @@ from getpass import getpass
 from io import TextIOWrapper
 from logging.handlers import WatchedFileHandler
 from werkzeug.routing import BaseConverter
+
+# Try to load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv is optional
 
 # Py2k compat.
 if sys.version_info[0] == 2:
@@ -90,7 +99,77 @@ DEBUG = False
 ROWS_PER_PAGE = 50
 QUERY_ROWS_PER_PAGE = 1000
 TRUNCATE_VALUES = True
-SECRET_KEY = 'sqlite-database-browser-0.1.0'
+
+#
+# Secret key management
+#
+
+def get_secure_secret_key():
+    """
+    Get or generate a secure secret key for Flask sessions.
+
+    Priority order:
+    1. SQLITE_WEB_SECRET_KEY environment variable
+    2. Existing .secret_key file
+    3. Generate new cryptographically secure key and save it
+    4. Fallback to hardcoded key (DEBUG mode only with warning)
+
+    Returns:
+        str: The secret key to use
+    """
+    # 1. Try environment variable first
+    env_key = os.environ.get('SQLITE_WEB_SECRET_KEY')
+    if env_key:
+        return env_key
+
+    # 2. Try to load existing key file
+    secret_key_file = os.path.join(CUR_DIR, '.secret_key')
+    if os.path.exists(secret_key_file):
+        try:
+            with open(secret_key_file, 'r') as f:
+                key = f.read().strip()
+                if key:
+                    return key
+        except Exception as exc:
+            std_warnings.warn(
+                'Failed to read .secret_key file: %s' % exc,
+                RuntimeWarning
+            )
+
+    # 3. Generate new secure key
+    try:
+        # Generate 32 bytes (256 bits) of random data, hex-encoded
+        new_key = secrets.token_hex(32)
+
+        # Try to save it for persistence
+        try:
+            with open(secret_key_file, 'w') as f:
+                f.write(new_key)
+            # Set restrictive permissions (owner read/write only)
+            os.chmod(secret_key_file, 0o600)
+            return new_key
+        except Exception as exc:
+            std_warnings.warn(
+                'Generated secure key but could not save to .secret_key file: %s. '
+                'A new key will be generated on each restart, invalidating sessions.' % exc,
+                RuntimeWarning
+            )
+            return new_key
+    except Exception as exc:
+        std_warnings.warn(
+            'Failed to generate secure secret key: %s' % exc,
+            RuntimeWarning
+        )
+
+    # 4. Fallback to hardcoded key (insecure!)
+    std_warnings.warn(
+        'Using hardcoded SECRET_KEY is insecure! Set SQLITE_WEB_SECRET_KEY '
+        'environment variable or ensure .secret_key file can be created.',
+        UserWarning
+    )
+    return 'sqlite-database-browser-0.1.0'
+
+SECRET_KEY = get_secure_secret_key()
 
 app = Flask(
     __name__,

@@ -114,6 +114,40 @@ The following options are available:
 * `-c`, `--cert` and ``-k``, ``--key`` - specify SSL cert and private key.
 * `-a`, `--ad-hoc` - run using an ad-hoc SSL context.
 
+### Security Configuration
+
+#### Secret Key Management
+
+Flask uses a secret key for session management. By default, sqlite-web will automatically generate a cryptographically secure random key and save it to `.secret_key` for persistence across restarts.
+
+For production deployments, you can explicitly set the secret key using the `SQLITE_WEB_SECRET_KEY` environment variable:
+
+```sh
+# Generate a secure random key
+$ python3 -c "import secrets; print(secrets.token_hex(32))"
+a1b2c3d4e5f6...
+
+# Set it as an environment variable
+$ export SQLITE_WEB_SECRET_KEY="a1b2c3d4e5f6..."
+$ sqlite_web /path/to/database.db
+```
+
+Alternatively, create a `.env` file in the project directory:
+
+```sh
+# Copy the example file
+$ cp .env.example .env
+
+# Edit and add your secret key
+$ nano .env
+```
+
+**Security notes:**
+- The auto-generated `.secret_key` file is created with restrictive permissions (600)
+- Both `.env` and `.secret_key` files are automatically ignored by git
+- Never commit secret keys to version control
+- If no secret key is provided and generation fails, a warning will be shown
+
 ### Using docker
 
 A Dockerfile is provided with sqlite-web. To use:

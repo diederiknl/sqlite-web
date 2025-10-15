@@ -390,7 +390,7 @@ pct exec $TEMPLATE_ID -- bash -c 'cat > /etc/default/sqlite-web << "CONFEOF"
 # Edit this file and restart service: systemctl restart sqlite-web
 
 # Database file to open (relative to /data or absolute path)
-SQLITE_DATABASE=example.db
+SQLITE_DATABASE=BierenDB.db
 
 # Listen address (0.0.0.0 for all interfaces, 127.0.0.1 for localhost only)
 LISTEN_HOST=0.0.0.0

@@ -10,7 +10,7 @@
 #   --template-id <id>     Template container ID (default: 999)
 #   --distro <name>        Distribution: debian or alpine (default: debian)
 #   --version <ver>        Version number for template (default: 1.0)
-#   --storage <name>       Storage location (default: local-lvm)
+#   --storage <name>       Storage location (default: local-zfs)
 #   --clean                Remove existing template before building
 #   --no-backup            Skip backup creation after build
 #   --help                 Show this help message
@@ -28,7 +28,7 @@ NC='\033[0m' # No Color
 TEMPLATE_ID="${TEMPLATE_ID:-999}"
 DISTRO="${DISTRO:-debian}"
 VERSION="${VERSION:-1.0}"
-STORAGE="${STORAGE:-local-lvm}"
+STORAGE="${STORAGE:-local-zfs}"
 TEMPLATE_STORAGE="${TEMPLATE_STORAGE:-local}"
 BUILD_DATE=$(date +%Y%m%d)
 CLEAN_EXISTING=0
@@ -63,7 +63,7 @@ Options:
     --template-id <id>     Template container ID (default: 999)
     --distro <name>        Distribution: debian or alpine (default: debian)
     --version <ver>        Version number for template (default: 1.0)
-    --storage <name>       Storage for container rootfs (default: local-lvm)
+    --storage <name>       Storage for container rootfs (default: local-zfs)
     --template-storage <n> Storage for templates (default: local)
     --clean                Remove existing template before building
     --no-backup            Skip backup creation after build

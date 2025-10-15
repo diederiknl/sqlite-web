@@ -1,0 +1,32 @@
+# SQLite-Web Configuration Example
+# Copy this to /etc/default/sqlite-web in your LXC container
+# Then restart the service: systemctl restart sqlite-web
+
+# Database file to open
+# Can be a filename (relative to /data) or absolute path
+SQLITE_DATABASE=example.db
+
+# Listen address
+# 0.0.0.0 = all interfaces (default)
+# 127.0.0.1 = localhost only (more secure)
+LISTEN_HOST=0.0.0.0
+
+# Listen port (inside container)
+# Default: 8080
+LISTEN_PORT=8080
+
+# Additional sqlite_web options
+# See: sqlite_web --help for all options
+#
+# Examples:
+# EXTRA_OPTIONS="--read-only"                    # Read-only mode
+# EXTRA_OPTIONS="--password"                     # Require password
+# EXTRA_OPTIONS="--read-only --no-browser"       # Multiple options
+# EXTRA_OPTIONS="--url-prefix /sqlite"           # Behind reverse proxy
+# EXTRA_OPTIONS="--cert /path/to/cert.pem --key /path/to/key.pem"  # HTTPS
+EXTRA_OPTIONS=""
+
+# Advanced options (uncomment to use):
+# EXTRA_OPTIONS="--read-only --password --require-login"
+# EXTRA_OPTIONS="--url-prefix /db --read-only"
+# EXTRA_OPTIONS="--ad-hoc-ssl"  # Enable HTTPS with self-signed cert

@@ -1,0 +1,41 @@
+[Unit]
+Description=SQLite Web Interface
+Documentation=https://github.com/coleifer/sqlite-web
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/data
+
+# Load configuration from environment file
+EnvironmentFile=-/etc/default/sqlite-web
+
+# Default values if not set in config
+Environment="SQLITE_DATABASE=example.db"
+Environment="LISTEN_HOST=0.0.0.0"
+Environment="LISTEN_PORT=8080"
+Environment="EXTRA_OPTIONS="
+
+# Start sqlite-web
+ExecStart=/usr/local/bin/sqlite_web \
+    -H ${LISTEN_HOST} \
+    -p ${LISTEN_PORT} \
+    -x ${SQLITE_DATABASE} \
+    ${EXTRA_OPTIONS}
+
+# Restart policy
+Restart=always
+RestartSec=5
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sqlite-web
+
+[Install]
+WantedBy=multi-user.target
